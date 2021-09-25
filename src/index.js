@@ -51,19 +51,16 @@ const resolvers={
       notes:async ()=>{
           return await models.Note.find();
       },
-      note:(parent,args)=>{
-          return notes.find(note=>note.id===args.id)
+      note:async (parent,args)=>{
+          return await models.Note.findById(args.id)
       }
   },
   Mutation:{
-      newNote:(parent,args)=>{
-         let noteValue={
-             id:String(notes.length+1),
+      newNote:async (parent,args)=>{
+         return await models.Note.create({
              content:args.content,
-             author:'liuyi'
-         }
-         notes.push(noteValue);
-         return noteValue
+             author:'liu yi'
+         })
       }
   }
 };
