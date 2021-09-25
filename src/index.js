@@ -1,8 +1,12 @@
 require('dotenv').config();
 const express=require('express');
-const {ApolloServer,gql}=require('apollo-server-express');
+const {ApolloServer}=require('apollo-server-express');
+
+// 导入本地模块
 const db=require('./db')
 const models=require('./models')
+const typeDefs=require('./schema')
+const resolvers=require('./resolvers')
 
 
 // 在.env文件指定的端口或4001端口上运行服务器
@@ -10,60 +14,6 @@ const port=process.env.PORT || 4000
 
 // 把DB_HOST值存入一个变量
 const DB_HOST=process.env.DB_HOST;
-
-let notes=[{
-    id:'1',
-    content:'This is a note',
-    author:'Adam Scott'
-},{
-    id:'2',
-    content:'This is another note',
-    author:'Harlow Everly'
-},{
-    id:'3',
-    content:'Oh hey look, another note!',
-    author:'Riley Harrison'
-}]
-
-// 使用GraphQL模式语言编制一个模式
-const typeDefs=gql`
- type Note{
-     id:ID!
-     content:String!
-     author:String!
- }
-
- type Query {
-     hello: String
-     notes:[Note!]!
-     note(id: ID!):Note!
- }
-
- type Mutation{
-    newNote(content:String!):Note!
- }
-`
-
-// 为模式字段提供解析函数
-const resolvers={
-  Query:{
-      hello:()=>'Hello world!',
-      notes:async ()=>{
-          return await models.Note.find();
-      },
-      note:async (parent,args)=>{
-          return await models.Note.findById(args.id)
-      }
-  },
-  Mutation:{
-      newNote:async (parent,args)=>{
-         return await models.Note.create({
-             content:args.content,
-             author:'liu yi'
-         })
-      }
-  }
-};
 
 const app=express();
 
@@ -73,7 +23,11 @@ db.connect(DB_HOST);
 
 // 设置Apollo Server
 const server=new ApolloServer({
-    typeDefs,resolvers
+    typeDefs,resolvers,
+    context:()=>{
+        // 把数据库模型添加到上下文中
+        return {models};
+    }
 })
 
 // 应用 Apollo GraphQL中间件 把路径设为 /api
