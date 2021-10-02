@@ -12,7 +12,17 @@ const noteSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref:'User',
       required: true
-    }
+    },
+    favoriteCount:{
+      type:Number,
+      default:0
+    },
+    favoritedBy:[
+      {
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'User'
+      }
+    ]
   },
   {
     // 添加 Date类型的 createdAt 和 updateAt字段

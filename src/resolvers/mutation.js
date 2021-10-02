@@ -113,5 +113,48 @@ module.exports = {
       // 如果检查过程中发现错误，返回false
       return false;
     }
+  },
+  toggleFavorite:async(parent,{id},{models,user})=>{
+     // 如果上下文没有用户，则抛出AuthenticationError
+     if(!user){
+       throw new AuthenticationError()
+     }
+
+     // 检查用户是不是已经收藏了该篇笔记
+     let noteCheck=await models.Note.findById(id);
+     const hasUser=noteCheck.favoritedBy.indexOf(user.id);
+
+     // 如果当前用户在列表中
+     // 把用户从列表中删除， 并把 favoriteCount的值减少一个
+     if(hasUser>=0){
+       return await models.Note.findByIdAndUpdate(id,{
+         $pull:{
+           favoritedBy:mongoose.Types.ObjectId(user.id)
+         },
+         $inc:{
+           favoriteCount:-1
+         }
+       },{
+         // 把 new 设为true，返回更新后的笔记
+         new:true
+       })
+     }else{
+       // 如果当前用户不在列表中
+       // 把用户添加到列表中，并把favoriteCount的值增加一个
+       return await models.Note.findByIdAndUpdate(
+         id,{
+           $pull:{
+             favoritedBy:mongoose.Types.ObjectId(user.id)
+           },
+           $inc:{
+             favoriteCount:1
+           }
+           
+         },{
+           new:true
+         }
+       )
+     }
+
   }
 };
