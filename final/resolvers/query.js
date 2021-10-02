@@ -12,6 +12,7 @@ module.exports = {
     return await models.User.find({}).limit(100);
   },
   me: async (parent, args, { models, user }) => {
+    console.log(typeof user.id)
     return await models.User.findById(user.id);
   },
   noteFeed: async (parent, { cursor }, { models }) => {

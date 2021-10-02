@@ -45,6 +45,7 @@ const server=new ApolloServer({
         const user=getUser(token);
         // 暂且把用户输出到控制台中
         console.log('user',user);
+       
         // 把数据库模型和用户添加到上下文中
         return {models,user};
     }
