@@ -2,6 +2,8 @@ require('dotenv').config();
 const express=require('express');
 const {ApolloServer}=require('apollo-server-express');
 const jwt=require('jsonwebtoken');
+const helmet=require('helmet');
+const cros=require('cors');
 
 // 导入本地模块
 const db=require('./db')
@@ -17,6 +19,8 @@ const port=process.env.PORT || 4000
 const DB_HOST=process.env.DB_HOST;
 
 const app=express();
+app.use(helmet());
+app.use(cros());
 
 //连接数据库
 db.connect(DB_HOST);
